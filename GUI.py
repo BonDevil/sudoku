@@ -4,9 +4,6 @@ import Solver
 from Button import Button
 
 
-
-
-
 #init game window
 pg.init()
 pg.display.set_caption('Sudoku - Piotr Grygoruk')
@@ -20,7 +17,7 @@ font = pg.font.SysFont(None, 80)
 # grid from Solver class
 grid = Solver.generate()
 
-#load images
+#load image
 undo_img = pg.image.load('images/undo.png').convert_alpha()
 hint_img = pg.image.load('images/hint.png').convert_alpha()
 erase_img = pg.image.load('images/erase.png').convert_alpha()
@@ -41,7 +38,7 @@ def draw_background():
     pg.draw.rect(screen, pg.Color("black"), pg.Rect(15, 15, 720, 720), 10)
     i = 1
     while (i * 80) < 720:
-        line_width = 3 if i % 3 > 0 else 10
+        line_width = 3 if i % 3 > 0 else 7
         pg.draw.line(screen, pg.Color("black"), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730), line_width)
         pg.draw.line(screen, pg.Color("black"), pg.Vector2(15, i * 80 + 15), pg.Vector2(735, i * 80 + 15), line_width)
         i += 1
@@ -62,7 +59,7 @@ def draw_numbers():
 
 
 def draw_menu():
-    #initializing menu buttons
+    # initializing menu buttons
     newgame_button = Button(800, 50, newgame_img, 1)
 
     undo_button = Button(850, 150, undo_img, 1)
@@ -81,7 +78,7 @@ def draw_menu():
     eight_button = Button(915, 530, eight_img, 0.85)
     nine_button = Button(1015, 530, nine_img, 0.85)
 
-    #drawing menu on screen
+    # drawing menu on screen
     newgame_button.draw(screen)
 
     undo_button.draw(screen)
@@ -101,18 +98,38 @@ def draw_menu():
     nine_button.draw(screen)
 
 
+def pick_number():
+    row = 0
+    while row < 9:
+        column = 0
+        while column < 9:
+            if pg.Rect(15 + column * 80, 15 + row * 80, 80, 80).collidepoint(pg.mouse.get_pos()):
+                if pg.mouse.get_pressed()[0] == 1:
+                    draw_background()
+                    draw_numbers()
+                    draw_menu()
+
+                    pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column * 80 + 15, row*80 + 15), pg.Vector2(column * 80 + 15, (row+1) * 80 + 15), 5)
+                    pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2((column + 1) * 80 + 15, row*80 + 15), pg.Vector2((column + 1) * 80 + 15, (row+1) * 80 + 15), 5)
+                    pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column*80 + 15, row * 80 + 15), pg.Vector2((column+1) * 80 + 15, row * 80 + 15), 5)
+                    pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column*80 + 15, (row + 1) * 80 + 15), pg.Vector2((column+1) * 80 + 15, (row + 1) * 80 + 15), 5)
+            column += 1
+        row += 1
+
+
+
+draw_background()
+draw_numbers()
+draw_menu()
 
 def game_loop():
+    pg.display.flip()
+
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
 
-    draw_background()
-    draw_numbers()
-    draw_menu()
-    pg.display.flip()
-    
-
+    pick_number()
 
 while 1:
     game_loop()
