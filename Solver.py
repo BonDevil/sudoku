@@ -1,6 +1,13 @@
-size = 9
+M = 9
 
-def checker(grid, row, col, num):
+def puzzle(a):
+    for i in range(M):
+        for j in range(M):
+            print(a[i][j], end=" ")
+        print()
+
+
+def solve(grid, row, col, num):
     for x in range(9):
         if grid[row][x] == num:
             return False
@@ -18,20 +25,20 @@ def checker(grid, row, col, num):
     return True
 
 
-def solve(grid, row, col):
-    if row == size - 1 and col == size:
+def Sudoku(grid, row, col):
+    if (row == M - 1 and col == M):
         return True
-    if col == size:
+    if col == M:
         row += 1
         col = 0
     if grid[row][col] > 0:
-        return solve(grid, row, col + 1)
-    for num in range(1, size + 1, 1):
+        return Sudoku(grid, row, col + 1)
+    for num in range(1, M + 1, 1):
 
-        if checker(grid, row, col, num):
+        if solve(grid, row, col, num):
 
             grid[row][col] = num
-            if solve(grid, row, col + 1):
+            if Sudoku(grid, row, col + 1):
                 return True
         grid[row][col] = 0
     return False
