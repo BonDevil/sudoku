@@ -3,24 +3,37 @@ import pygame as pg
 import Solver
 from Button import Button
 
-# display window
+
+
+
+
+#init game window
 pg.init()
 pg.display.set_caption('Sudoku - Piotr Grygoruk')
 
 screen_size = 1200, 750
 screen = pg.display.set_mode(screen_size)
+
 font = pg.font.SysFont(None, 80)
 
-# start grid from Solver class
+
+# grid from Solver class
 grid = Solver.generate()
 
-# load button images
+#load images
 undo_img = pg.image.load('images/undo.png').convert_alpha()
 hint_img = pg.image.load('images/hint.png').convert_alpha()
 erase_img = pg.image.load('images/erase.png').convert_alpha()
+newgame_img = pg.image.load('images/newgame.png').convert_alpha()
 one_img = pg.image.load('images/1.png').convert_alpha()
 two_img = pg.image.load('images/2.png').convert_alpha()
 three_img = pg.image.load('images/3.png').convert_alpha()
+four_img = pg.image.load('images/4.png').convert_alpha()
+five_img = pg.image.load('images/5.png').convert_alpha()
+six_img = pg.image.load('images/6.png').convert_alpha()
+seven_img = pg.image.load('images/7.png').convert_alpha()
+eight_img = pg.image.load('images/8.png').convert_alpha()
+nine_img = pg.image.load('images/9.png').convert_alpha()
 
 
 def draw_background():
@@ -42,15 +55,51 @@ def draw_numbers():
         while column < 9:
             if grid[row][column] != 0:
                 output = grid[row][column]
-                n_text = font.render(str(output), True, pg.Color('black'))
+                n_text = font.render(str(output), True, pg.Color(0, 122, 204))
                 screen.blit(n_text, pg.Vector2(column * 80 + offset + 5, row * 80 + offset - 2))
             column += 1
         row += 1
 
 
 def draw_menu():
-    undo_button = Button(500, 200, undo_img, 1)
+    #initializing menu buttons
+    newgame_button = Button(800, 50, newgame_img, 1)
+
+    undo_button = Button(850, 150, undo_img, 1)
+    erase_button = Button(930, 150, erase_img, 1)
+    hint_button = Button(1010, 150, hint_img, 1)
+
+    one_button = Button(815, 300, one_img, 0.85)
+    two_button = Button(915, 300, two_img, 0.85)
+    three_button = Button(1015, 300, three_img, 0.85)
+
+    four_button = Button(815, 415, four_img, 0.85)
+    five_button = Button(915, 415, five_img, 0.85)
+    six_button = Button(1015, 415, six_img, 0.85)
+
+    seven_button = Button(815, 530, seven_img, 0.85)
+    eight_button = Button(915, 530, eight_img, 0.85)
+    nine_button = Button(1015, 530, nine_img, 0.85)
+
+    #drawing menu on screen
+    newgame_button.draw(screen)
+
     undo_button.draw(screen)
+    erase_button.draw(screen)
+    hint_button.draw(screen)
+
+    one_button.draw(screen)
+    two_button.draw(screen)
+    three_button.draw(screen)
+
+    four_button.draw(screen)
+    five_button.draw(screen)
+    six_button.draw(screen)
+
+    seven_button.draw(screen)
+    eight_button.draw(screen)
+    nine_button.draw(screen)
+
 
 
 def game_loop():
@@ -62,6 +111,10 @@ def game_loop():
     draw_numbers()
     draw_menu()
     pg.display.flip()
+    
+
 
 while 1:
     game_loop()
+
+
