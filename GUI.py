@@ -1,6 +1,7 @@
 import sys
 import pygame as pg
 import Solver
+import copy
 from Button import Button
 
 
@@ -10,12 +11,11 @@ pg.display.set_caption('Sudoku - Piotr Grygoruk')
 
 screen_size = 1200, 750
 screen = pg.display.set_mode(screen_size)
-
 font = pg.font.SysFont(None, 80)
-
 
 # grid from Solver class
 grid = Solver.generate()
+basic_grid = copy.deepcopy(grid)
 
 #load image
 undo_img = pg.image.load('images/undo.png').convert_alpha()
@@ -31,6 +31,25 @@ six_img = pg.image.load('images/6.png').convert_alpha()
 seven_img = pg.image.load('images/7.png').convert_alpha()
 eight_img = pg.image.load('images/8.png').convert_alpha()
 nine_img = pg.image.load('images/9.png').convert_alpha()
+
+# initializing menu buttons
+newgame_button = Button(800, 50, newgame_img, 1)
+
+undo_button = Button(850, 150, undo_img, 1)
+erase_button = Button(930, 150, erase_img, 1)
+hint_button = Button(1010, 150, hint_img, 1)
+
+one_button = Button(815, 300, one_img, 0.85)
+two_button = Button(915, 300, two_img, 0.85)
+three_button = Button(1015, 300, three_img, 0.85)
+
+four_button = Button(815, 415, four_img, 0.85)
+five_button = Button(915, 415, five_img, 0.85)
+six_button = Button(1015, 415, six_img, 0.85)
+
+seven_button = Button(815, 530, seven_img, 0.85)
+eight_button = Button(915, 530, eight_img, 0.85)
+nine_button = Button(1015, 530, nine_img, 0.85)
 
 
 def draw_background():
@@ -59,25 +78,6 @@ def draw_numbers():
 
 
 def draw_menu():
-    # initializing menu buttons
-    newgame_button = Button(800, 50, newgame_img, 1)
-
-    undo_button = Button(850, 150, undo_img, 1)
-    erase_button = Button(930, 150, erase_img, 1)
-    hint_button = Button(1010, 150, hint_img, 1)
-
-    one_button = Button(815, 300, one_img, 0.85)
-    two_button = Button(915, 300, two_img, 0.85)
-    three_button = Button(1015, 300, three_img, 0.85)
-
-    four_button = Button(815, 415, four_img, 0.85)
-    five_button = Button(915, 415, five_img, 0.85)
-    six_button = Button(1015, 415, six_img, 0.85)
-
-    seven_button = Button(815, 530, seven_img, 0.85)
-    eight_button = Button(915, 530, eight_img, 0.85)
-    nine_button = Button(1015, 530, nine_img, 0.85)
-
     # drawing menu on screen
     newgame_button.draw(screen)
 
@@ -98,7 +98,10 @@ def draw_menu():
     nine_button.draw(screen)
 
 
-def pick_number():
+picked_square = (-1, -1, False)
+
+
+def pick_square():
     row = 0
     while row < 9:
         column = 0
@@ -113,25 +116,78 @@ def pick_number():
                     pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2((column + 1) * 80 + 15, row*80 + 15), pg.Vector2((column + 1) * 80 + 15, (row+1) * 80 + 15), 5)
                     pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column*80 + 15, row * 80 + 15), pg.Vector2((column+1) * 80 + 15, row * 80 + 15), 5)
                     pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column*80 + 15, (row + 1) * 80 + 15), pg.Vector2((column+1) * 80 + 15, (row + 1) * 80 + 15), 5)
+
+                    global picked_square
+                    picked_square = row, column, True
             column += 1
         row += 1
 
+
+def pick_number(row, col, numb):
+    # we can't change number from generated grid
+    if basic_grid[row][col] == 0:
+        global grid
+        grid[row][col] = numb
+        draw_background()
+        draw_numbers()
 
 
 draw_background()
 draw_numbers()
 draw_menu()
 
+
 def game_loop():
     pg.display.flip()
+    pick_square()
+
+    if newgame_button.draw(screen):
+        global grid
+        global basic_grid
+        grid = copy.deepcopy(Solver.generate())
+        basic_grid = copy.deepcopy(grid)
+        draw_background()
+        draw_menu()
+        draw_numbers()
+
+    if undo_button.draw(screen):
+        print("undo clicked")
+
+    if erase_button.draw(screen):
+        print("erase clicked")
+
+    if hint_button.draw(screen):
+        print("hint clicked")
+
+    row, col, is_picked = picked_square
+
+    if is_picked:
+        if one_button.draw(screen):
+            pick_number(row, col, 1)
+        if two_button.draw(screen):
+            pick_number(row, col, 2)
+        if three_button.draw(screen):
+            pick_number(row, col, 3)
+        if four_button.draw(screen):
+            pick_number(row, col, 4)
+        if five_button.draw(screen):
+            pick_number(row, col, 5)
+        if six_button.draw(screen):
+            pick_number(row, col, 6)
+        if seven_button.draw(screen):
+            pick_number(row, col, 7)
+        if eight_button.draw(screen):
+            pick_number(row, col, 8)
+        if nine_button.draw(screen):
+            pick_number(row, col, 9)
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
             sys.exit()
 
-    pick_number()
+
+
 
 while 1:
     game_loop()
-
 
