@@ -1,13 +1,26 @@
 import sys
 import pygame as pg
 import Solver
+from Button import Button
 
+# display window
 pg.init()
+pg.display.set_caption('Sudoku - Piotr Grygoruk')
+
 screen_size = 1200, 750
 screen = pg.display.set_mode(screen_size)
 font = pg.font.SysFont(None, 80)
+
+# start grid from Solver class
 grid = Solver.generate()
-pg.display.set_caption('Sudoku - Piotr Grygoruk')
+
+# load button images
+undo_img = pg.image.load('images/undo.png').convert_alpha()
+hint_img = pg.image.load('images/hint.png').convert_alpha()
+erase_img = pg.image.load('images/erase.png').convert_alpha()
+one_img = pg.image.load('images/1.png').convert_alpha()
+two_img = pg.image.load('images/2.png').convert_alpha()
+three_img = pg.image.load('images/3.png').convert_alpha()
 
 
 def draw_background():
@@ -35,6 +48,11 @@ def draw_numbers():
         row += 1
 
 
+def draw_menu():
+    undo_button = Button(500, 200, undo_img, 1)
+    undo_button.draw(screen)
+
+
 def game_loop():
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -42,8 +60,8 @@ def game_loop():
 
     draw_background()
     draw_numbers()
+    draw_menu()
     pg.display.flip()
-
 
 while 1:
     game_loop()
