@@ -1,9 +1,12 @@
 import asyncio
 import sys
+
+import pygame
 import pygame as pg
 import Solver
 import copy
 import random
+import datetime
 from Button import Button
 
 # init game window
@@ -68,6 +71,22 @@ def draw_background():
         pg.draw.line(screen, pg.Color("black"), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730), line_width)
         pg.draw.line(screen, pg.Color("black"), pg.Vector2(15, i * 80 + 15), pg.Vector2(730, i * 80 + 15), line_width)
         i += 1
+
+
+WHITE = (130, 130, 255)
+BLACK = (0, 0, 0)
+
+
+def draw_text(text, font, text_col, x, y):
+    img = font.render(text, True, text_col)
+    rect = img.get_rect()
+    rect.center = (965, 680)
+    screen.blit(img, rect)
+
+
+def draw_time():
+    strTime = datetime.datetime.now().strftime("%H:%M:%S")
+    draw_text(strTime, font, WHITE, 20, 20)
 
 
 def draw_numbers():
@@ -273,6 +292,8 @@ def hint():
 
 
 def loop_one_step():
+    pg.draw.rect(screen, pg.Color(204, 204, 204), pygame.Rect(750, 630, 400, 100))
+    draw_time()
     pg.display.update()
     check_win()
     win()
@@ -294,7 +315,8 @@ async def game_loop():
     draw_background()
     draw_numbers()
     draw_menu()
+    draw_time()
     while True:
+
         loop_one_step()
         await asyncio.sleep(0)
-
