@@ -65,7 +65,7 @@ def draw_background():
     while (i * 80) < 720:
         line_width = 3 if i % 3 > 0 else 7
         pg.draw.line(screen, pg.Color("black"), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730), line_width)
-        pg.draw.line(screen, pg.Color("black"), pg.Vector2(15, i * 80 + 15), pg.Vector2(735, i * 80 + 15), line_width)
+        pg.draw.line(screen, pg.Color("black"), pg.Vector2(15, i * 80 + 15), pg.Vector2(730, i * 80 + 15), line_width)
         i += 1
 
 
