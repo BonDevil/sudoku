@@ -17,7 +17,7 @@ font = pg.font.SysFont(None, 80)
 grid = copy.deepcopy(Solver.generate())
 basic_grid = copy.deepcopy(grid)
 solved_grid = copy.deepcopy(grid)
-Solver.Sudoku(solved_grid, 0, 0)
+Solver.solve(solved_grid, 0, 0)
 won = False
 
 # load image
@@ -143,7 +143,7 @@ def set_number(row, col, numb):
         draw_numbers()
 
 
-def action_after_picked(row, col, is_picked):
+def action_after_picked(row, col):
     if basic_grid[row][col] == 0:  # we can change grid if square in generated grid was empty
         drawn = True
         if one_button.draw(screen):
@@ -190,22 +190,21 @@ def check_win():
             column += 1
         row += 1
 
+
 def draw_win():
-    if won:
-        pg.draw.rect(screen, pg.Color(0, 153, 0), pg.Rect(15, 15, 720, 720), 10)
-        i = 1
-        while (i * 80) < 720:
-            line_width = 3 if i % 3 > 0 else 7
-            pg.draw.line(screen, pg.Color(0, 153, 0), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730),
-                         line_width)
-            pg.draw.line(screen, pg.Color(0, 153, 0), pg.Vector2(15, i * 80 + 15), pg.Vector2(735, i * 80 + 15),
-                         line_width)
-            i += 1
+    pg.draw.rect(screen, pg.Color(0, 153, 0), pg.Rect(15, 15, 720, 720), 10)
+    i = 1
+    while (i * 80) < 720:
+        line_width = 3 if i % 3 > 0 else 7
+        pg.draw.line(screen, pg.Color(0, 153, 0), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730),
+                     line_width)
+        pg.draw.line(screen, pg.Color(0, 153, 0), pg.Vector2(15, i * 80 + 15), pg.Vector2(735, i * 80 + 15),
+                     line_width)
+        i += 1
 
 
 def is_whole_filled():
     row = 0
-    won = True
     while row < 9:
         column = 0
         while column < 9:
@@ -215,6 +214,7 @@ def is_whole_filled():
         row += 1
     return True
 
+
 def new():
     if newgame_button.draw(screen):
         global grid
@@ -223,15 +223,13 @@ def new():
         grid = copy.deepcopy(Solver.generate())
         basic_grid = copy.deepcopy(grid)
         solved_grid = copy.deepcopy(grid)
-        Solver.Sudoku(solved_grid, 0, 0)
+        Solver.solve(solved_grid, 0, 0)
         draw_background()
         draw_menu()
         draw_numbers()
 
 
-def loop_one_step():
-
-    check_win()
+def win():
     global won
     if won:
         draw_background()
@@ -240,11 +238,8 @@ def loop_one_step():
         won = False
         new()
 
-    pg.display.flip()
-    new()
-    # new game pressed
 
-
+def undo():
     # undo pressed
     if undo_button.draw(screen):
         row, col, event_type, opt_value = events.pop()
@@ -259,7 +254,8 @@ def loop_one_step():
         draw_numbers()
         draw_menu()
 
-    # hint pressed
+
+def hint():
     if hint_button.draw(screen):
         if not is_whole_filled():
             row = 0
@@ -274,11 +270,19 @@ def loop_one_step():
             draw_numbers()
             events.append((row, column, 3, -1))
 
-    pick_square()
-    row, col, is_picked = picked_square
 
+def loop_one_step():
+    pg.display.update()
+    check_win()
+    win()
+    new()
+    undo()
+    hint()
+    pick_square()
+
+    row, col, is_picked = picked_square
     if is_picked:
-        action_after_picked(row, col, is_picked)
+        action_after_picked(row, col)
 
     for event in pg.event.get():
         if event.type == pg.QUIT:

@@ -1,13 +1,71 @@
+def valid_row(row, grid):
+    temp = grid[row]
+    # Removing 0's.
+    temp = list(filter(lambda a: a != 0, temp))
+    # Checking for invalid values.
+    if any(0 > i > 9 for i in temp):
+        print("Invalid value")
+        return -1
+    # Checking for repeated values.
+    elif len(temp) != len(set(temp)):
+        return 0
+    else:
+        return 1
+
+
+def valid_col(col, grid):
+    # Extracting the column.
+    temp = [row[col] for row in grid]
+    # Removing 0's.
+    temp = list(filter(lambda a: a != 0, temp))
+    # Checking for invalid values.
+    if any(0 > i > 9 for i in temp):
+        print("Invalid value")
+        return -1
+    # Checking for repeated values.
+    elif len(temp) != len(set(temp)):
+        return 0
+    else:
+        return 1
+
+
+def valid_subsquares(grid):
+    for row in range(0, 9, 3):
+        for col in range(0, 9, 3):
+            temp = []
+            for r in range(row, row +3):
+                for c in range(col, col +3):
+                    if grid[r][c] != 0:
+                        temp.append(grid[r][c])
+            # Checking for invalid values.
+            if any(0 > i > 9 for i in temp):
+                print("Invalid value")
+                return -1
+            # Checking for repeated values.
+            elif len(temp) != len(set(temp)):
+                return 0
+    return 1
+
+
+# Function to check if the board invalid.
+def valid_board(grid):
+    for i in range(9):
+        res1 = valid_row(i, grid)
+        res2 = valid_col(i, grid)
+
+        if res1 < 1 or res2 < 1:
+            return False
+
+    res3 = valid_subsquares(grid)
+    if res3 < 1:
+        return False
+    else:
+        return True
+
+
 M = 9
 
-def puzzle(a):
-    for i in range(M):
-        for j in range(M):
-            print(a[i][j], end=" ")
-        print()
-
-
-def solve(grid, row, col, num):
+def check(grid, row, col, num):
     for x in range(9):
         if grid[row][x] == num:
             return False
@@ -25,20 +83,22 @@ def solve(grid, row, col, num):
     return True
 
 
-def Sudoku(grid, row, col):
-    if (row == M - 1 and col == M):
+def solve(grid, row, col):
+    if not valid_board(grid):
+        return False
+    if row == M - 1 and col == M:
         return True
     if col == M:
         row += 1
         col = 0
     if grid[row][col] > 0:
-        return Sudoku(grid, row, col + 1)
+        return solve(grid, row, col + 1)
     for num in range(1, M + 1, 1):
 
-        if solve(grid, row, col, num):
+        if check(grid, row, col, num):
 
             grid[row][col] = num
-            if Sudoku(grid, row, col + 1):
+            if solve(grid, row, col + 1):
                 return True
         grid[row][col] = 0
     return False

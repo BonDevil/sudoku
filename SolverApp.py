@@ -1,27 +1,29 @@
 import sys
 import pygame as pg
 import Solver
-import copy
-
 from Button import Button
 
 # init game window
 pg.init()
 pg.display.set_caption('Sudoku - Piotr Grygoruk')
-
 screen_size = 1200, 750
 screen = pg.display.set_mode(screen_size)
 font = pg.font.SysFont(None, 80)
+picked_square = (-1, -1, False)     # global variable to store square to put number in
+events = [(-1, -1, -1, -1)]         # events that happened row, column, event (1 - number added on grid, 2 - number erased - 3 hint put), optional value - if erased
+initialized = False                 # is game initialized
 
-grid = [[2, 5, 0, 0, 3, 0, 9, 0, 1],
-        [0, 1, 0, 0, 0, 4, 0, 0, 0],
-    [4, 0, 7, 0, 0, 0, 2, 0, 8],
-    [0, 0, 5, 2, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 9, 8, 1, 0, 0],
-    [0, 4, 0, 0, 0, 3, 0, 0, 0],
-    [0, 0, 0, 3, 6, 0, 0, 7, 2],
-    [0, 7, 0, 0, 0, 0, 0, 0, 3],
-    [9, 0, 3, 0, 0, 0, 6, 0, 4]]
+grid = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
 
 # load image
 erase_img = pg.image.load('images/erase.png').convert_alpha()
@@ -50,13 +52,6 @@ six_button = Button(1015, 415, six_img, 0.85)
 seven_button = Button(815, 530, seven_img, 0.85)
 eight_button = Button(915, 530, eight_img, 0.85)
 nine_button = Button(1015, 530, nine_img, 0.85)
-
-picked_square = (-1, -1, False)  # global variable to store square to put number in
-events = [(-1, -1, -1, -1)]
-initialized = False
-
-
-# events that happened row, column, event (1 - number added on grid, 2 - number erased - 3 hint put), optional value - if erased
 
 
 def draw_background():
@@ -89,7 +84,6 @@ def draw_menu():
     clear_button.draw(screen)
     solve_button.draw(screen)
 
-
     erase_button.draw(screen)
 
     one_button.draw(screen)
@@ -114,6 +108,18 @@ def draw_picked_square(row, column):
                  pg.Vector2((column + 1) * 80 + 15, row * 80 + 15), 5)
     pg.draw.line(screen, pg.Color(120, 122, 204), pg.Vector2(column * 80 + 15, (row + 1) * 80 + 15),
                  pg.Vector2((column + 1) * 80 + 15, (row + 1) * 80 + 15), 5)
+
+
+def draw_wrong():
+    pg.draw.rect(screen, pg.Color("red"), pg.Rect(15, 15, 720, 720), 10)
+    i = 1
+    while (i * 80) < 720:
+        line_width = 3 if i % 3 > 0 else 7
+        pg.draw.line(screen, pg.Color("red"), pg.Vector2(i * 80 + 15, 15), pg.Vector2(i * 80 + 15, 730),
+                     line_width)
+        pg.draw.line(screen, pg.Color("red"), pg.Vector2(15, i * 80 + 15), pg.Vector2(735, i * 80 + 15),
+                     line_width)
+        i += 1
 
 
 def pick_square():
@@ -194,20 +200,25 @@ def new():
         draw_menu()
         draw_numbers()
 
+def solve():
+    if solve_button.draw(screen):
+        if not Solver.solve(grid, 0, 0):
+            draw_wrong()
+        else:
+            draw_background()
+            draw_numbers()
+
 
 def loop_one_step():
     pg.display.flip()
     new()
-
     pick_square()
     row, col, is_picked = picked_square
 
     if is_picked:
         action_after_picked(row, col, is_picked)
 
-    if solve_button.draw(screen):
-        solved = Solver.Sudoku(grid, 0, 0)
-        draw_numbers()
+    solve()
 
     for event in pg.event.get():
         if event.type == pg.QUIT:
