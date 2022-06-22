@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import pygame as pg
 import Solver
@@ -289,9 +290,11 @@ def loop_one_step():
             sys.exit()
 
 
-def game_loop():
+async def game_loop():
     draw_background()
     draw_numbers()
     draw_menu()
-    while 1:
+    while True:
         loop_one_step()
+        await asyncio.sleep(0)
+

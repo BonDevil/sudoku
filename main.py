@@ -1,6 +1,6 @@
 import GameApp
 import SolverApp
+import asyncio
 
 if __name__ == '__main__':
-    GameApp.game_loop()
-    # SolverApp.game_loop()
+    asyncio.run(GameApp.game_loop())
